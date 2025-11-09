@@ -10,13 +10,19 @@ class SECClient:
     
     def __init__(self, companies_data: dict[str, dict], filings_data: dict[str, list[dict]] | None = None):
         """
-        Initialize with company ticker->info mapping and optional filings data.
+        Initialize with company data and optional filings data.
         
         Args:
-            companies_data: Dict mapping ticker -> {cik: str, title: str}
+            companies_data: Dict with numeric keys mapping to company dicts
+                           Each company dict has: cik_str (int), ticker (str), title (str)
             filings_data: Optional dict mapping CIK -> list of filing dicts
         """
-        self._companies = companies_data
+        # Convert the indexed format to ticker-based lookup for efficiency
+        self._companies_by_ticker = {}
+        for key, company_info in companies_data.items():
+            ticker = company_info['ticker'].upper().strip()
+            self._companies_by_ticker[ticker] = company_info
+        
         self._filings = filings_data or {}
     
     def lookup_company(self, ticker: str) -> Company:
@@ -37,12 +43,12 @@ class SECClient:
         
         ticker = ticker.upper().strip()
         
-        if ticker not in self._companies:
+        if ticker not in self._companies_by_ticker:
             raise ValueError(f"Ticker '{ticker}' not found")
         
-        company_data = self._companies[ticker]
+        company_data = self._companies_by_ticker[ticker]
         
-        # Pad CIK to 10 digits
+        # Pad CIK to 10 digits (cik_str is an integer in the given format)
         cik = str(company_data['cik_str']).zfill(10)
         
         return Company(
