@@ -13,11 +13,8 @@ def load_json(filepath: Path) -> dict:
     try:
         with open(filepath, 'r') as f:
             return json.load(f)
-    except FileNotFoundError:
-        print(f"Error: File not found: {filepath}", file=sys.stderr)
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in {filepath}: {e}", file=sys.stderr)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading {filepath}: {e}", file=sys.stderr)
         sys.exit(1)
 
 def parse_date(date_str: str) -> date:
@@ -26,7 +23,6 @@ def parse_date(date_str: str) -> date:
         return datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         raise argparse.ArgumentTypeError(f"Invalid date format: {date_str}. Use YYYY-MM-DD")
-
 
 def print_table(filings: list) -> None:
     # Print filings as a formatted table.
@@ -60,13 +56,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description='Fetch SEC EDGAR filings for a company',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-            Examples:
+        epilog="""Examples:
             %(prog)s AAPL
             %(prog)s AAPL --form 10-K --limit 5
             %(prog)s MSFT --form 10-Q 10-K --date-from 2023-01-01 --date-to 2023-12-31
-            %(prog)s TSLA --json
-                    """
+            %(prog)s TSLA --json"""
     )
     
     parser.add_argument('ticker', help='Company ticker symbol')

@@ -1,17 +1,11 @@
 # SEC EDGAR Connector
 
-A Python module for fetching and filtering SEC EDGAR filings by company ticker, form type, and date range.
+SEC EDGAR filings by company ticker, form type, and date range.
 
 ## Installation
 
 ```bash
 pip install -e .
-```
-
-## Running Tests
-
-```bash
-pytest
 ```
 
 ## Example CLI Usage
@@ -35,19 +29,3 @@ python -m sec_connector.cli GOOGL --form 10-K --date-from 2023-01-01 --limit 3
 # JSON output
 python -m sec_connector.cli AMZN --form 10-Q --json
 ```
-
-## Features
-
-- Company lookup by ticker symbol (case-insensitive)
-- Filter filings by form type (10-K, 10-Q, 8-K, etc.)
-- Filter by date range (inclusive)
-- Sort results by date (newest first)
-- Limit result count
-- Output as table or JSON
-
-## Requirements
-
-- Python >= 3.11
-- httpx >= 0.24
-- pydantic >= 2.0
-- pytest >= 7.0
